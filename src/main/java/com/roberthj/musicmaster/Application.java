@@ -10,3 +10,10 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 }
+
+//TODO:
+// * Pass in an artist
+// * Get a list of concerts
+// * add endpoint where you can save a concert you want to go to
+// * Get a reminder when the concert is approaching
+// * Create gRPC for all endpoints as well

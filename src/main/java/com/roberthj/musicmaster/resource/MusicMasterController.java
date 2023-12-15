@@ -1,7 +1,6 @@
 package com.roberthj.musicmaster.resource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.roberthj.musicmaster.client.SpotifyApiAuth;
 import com.roberthj.musicmaster.service.MusicMasterService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

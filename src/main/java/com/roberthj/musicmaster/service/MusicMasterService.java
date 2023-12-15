@@ -1,25 +1,13 @@
 package com.roberthj.musicmaster.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.roberthj.musicmaster.client.SpotifyApiAuthResponse;
 import com.roberthj.musicmaster.client.SpotifyApiClient;
 import java.net.URI;
-import java.util.Base64;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class MusicMasterService {
-
-  @Value("${spotify.api.client_id}")
-  private String clientId;
-
-  @Value("${spotify.api.client_secret}")
-  private String clientSecret;
 
   public static final String BASE_URI = "https://api.spotify.com/v1";
   private final SpotifyApiClient spotifyApiClient;
@@ -30,47 +18,13 @@ public class MusicMasterService {
 
   public String lookupArtistId (String artist) throws JsonProcessingException {
 
+    var uri = generateFullSearchUri("/search","artist", artist);
 
-    var tokenUrl =
-        UriComponentsBuilder.fromUriString("https://accounts.spotify.com/api/token")
-            .build(true)
-            .toUri();
+    var artistResponse = spotifyApiClient.getSyncronously(uri);
 
-    // Encode client_id and client_secret in Base64
-    String credentials = clientId + ":" + clientSecret;
+    //Todo: Parse response and pick the most popular artist if more than one exists
 
-    String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
-
-    // Build the request headers
-    HttpHeaders authHeaders = new HttpHeaders();
-    authHeaders.set("Authorization", "Basic " + encodedCredentials);
-    authHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-    // Build the request body
-    String requestBody = "grant_type=client_credentials";
-
-    var authTokenResponse = spotifyApiClient.postSyncronously(tokenUrl, authHeaders, requestBody);
-
-    ObjectMapper objectMapper = new ObjectMapper(); //TODO: Move out
-
-    var authResponse = objectMapper.readValue(authTokenResponse, SpotifyApiAuthResponse.class);
-
-    var accessToken= authResponse.getAccessToken();
-
-    var uri = generateFullSearchUri("/search","artist", artist); // Pass this in from service
-    // instead
-
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", "application/json");
-    headers.add("Authorization", "Bearer " + accessToken);
-
-    var artistResponse = spotifyApiClient.getSyncronously(uri, headers);
-
-    System.out.println(artistResponse);
-
-    //Use search endpoint, pass in name, pick the most popular one and return the id
-
-    return "id";
+    return artistResponse;
 
   }
 
