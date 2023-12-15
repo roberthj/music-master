@@ -68,7 +68,7 @@ public class SpotifyApiAuth {
 
       } catch (JsonProcessingException e) {
 
-        //TODO: Throw Exeption
+        //TODO: Throw Exception
 
         System.out.println("Error while parsing json response");
 

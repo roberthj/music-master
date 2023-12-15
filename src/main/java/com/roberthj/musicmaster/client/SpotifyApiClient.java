@@ -1,48 +1,39 @@
 package com.roberthj.musicmaster.client;
 
 import java.net.URI;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class SpotifyApiClient {
-
-  public static final String BASE_URI = "https://api.spotify.com/v1";
   private final SpotifyApiAuth spotifyApiAuth;
+
+  @Autowired
+  private WebClient webClient;
 
   public SpotifyApiClient(final SpotifyApiAuth spotifyApiAuth) {
     this.spotifyApiAuth = spotifyApiAuth;
   }
 
-  public void findArtistByName() {
+  public String getSyncronously(URI uri) {
     var accessToken = spotifyApiAuth.getAccessToken();
 
-    System.out.println(accessToken);
-
-    var uri = generateFullUri("/search"); // Pass this in from service instead
-
-    WebClient webClient = WebClient.create();
     // Create HttpHeaders object and set multiple headers
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/json");
     headers.add("Authorization", "Bearer " + accessToken);
-    webClient
+    return webClient
         .get()
         .uri(uri)
         .headers(h -> h.addAll(headers))
         .retrieve()
         .bodyToMono(String.class)
-        .subscribe(response -> System.out.println("Response: " + response));
+        .block();
+
+    //TODO: What about error handling?
   }
 
-  private URI generateFullUri(String path) {
 
-    return UriComponentsBuilder.fromUriString(BASE_URI + path)
-        .queryParam("type", "artist")
-        .queryParam("q", "Metallica")
-        .build(true)
-        .toUri();
-  }
 }
