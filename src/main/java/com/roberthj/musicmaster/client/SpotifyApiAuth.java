@@ -1,6 +1,10 @@
 package com.roberthj.musicmaster.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Base64;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 public class SpotifyApiAuth {
 
@@ -20,7 +25,7 @@ public class SpotifyApiAuth {
   private String clientSecret;
 
   //TODO: Remove comments
-  public String getAccessToken() {
+  public String getAccessToken()  {
 
     // Encode client_id and client_secret in Base64
     String credentials = clientId + ":" + clientSecret;
@@ -53,7 +58,24 @@ public class SpotifyApiAuth {
       // Parse the response JSON to get the access token
       String responseBody = responseEntity.getBody();
       // Handle the responseBody JSON accordingly
-      return responseBody;
+
+      ObjectMapper objectMapper = new ObjectMapper(); //TODO: Move out
+
+      try {
+        var authResponse = objectMapper.readValue(responseBody, SpotifyApiAuthResponse.class);
+
+        return authResponse.getAccessToken();
+
+      } catch (JsonProcessingException e) {
+
+        //TODO: Throw Exeption
+
+        System.out.println("Error while parsing json response");
+
+        return null;
+      }
+
+
     } else {
       //TODO: Throw Exeption
       System.out.println("Error: " + responseEntity.getStatusCode());
