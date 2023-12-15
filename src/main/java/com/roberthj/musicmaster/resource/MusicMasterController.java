@@ -26,7 +26,14 @@ public class MusicMasterController {
   @GetMapping("/lookup_artist/{artist}")
   public String lookUpArtist(@PathVariable(value = "artist") String artist) throws JsonProcessingException {
 
-    var artist_id = musicMasterService.lookupArtistId(artist);
-    return artist_id;
+    return  musicMasterService.lookupArtistId(artist);
+
+  }
+
+  @GetMapping("/lookup_event/{artist}")
+  public String lookUpConcert(@PathVariable(value = "artist") String artist) {
+
+    return  musicMasterService.lookupEvent(artist);
+
   }
 }

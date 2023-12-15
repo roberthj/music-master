@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class SpotifyApiClient {
 
+  //TODO: Add interface before this class
   @Value("${spotify.api.client_id}")
   private String clientId;
 

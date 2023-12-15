@@ -13,7 +13,7 @@ public class Application {
 
 //TODO:
 // * Pass in an artist
-// * Get a list of concerts
+// * Get a list of concerts from Ticketmaster
 // * add endpoint where you can save a concert you want to go to
 // * Get a reminder when the concert is approaching
 // * Create gRPC for all endpoints as well
