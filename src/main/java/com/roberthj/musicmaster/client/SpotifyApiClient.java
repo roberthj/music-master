@@ -5,25 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 public class SpotifyApiClient {
-  private final SpotifyApiAuth spotifyApiAuth;
 
   @Autowired
   private WebClient webClient;
 
-  public SpotifyApiClient(final SpotifyApiAuth spotifyApiAuth) {
-    this.spotifyApiAuth = spotifyApiAuth;
-  }
+  public String getSyncronously(URI uri, HttpHeaders headers) {
 
-  public String getSyncronously(URI uri) {
-    var accessToken = spotifyApiAuth.getAccessToken();
 
-    // Create HttpHeaders object and set multiple headers
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", "application/json");
-    headers.add("Authorization", "Bearer " + accessToken);
     return webClient
         .get()
         .uri(uri)
@@ -33,6 +25,21 @@ public class SpotifyApiClient {
         .block();
 
     //TODO: What about error handling?
+  }
+
+  public String postSyncronously(URI uri, HttpHeaders headers, String body) {
+
+    return webClient
+        .post()
+        .uri(uri)
+        .headers(h -> h.addAll(headers))
+        .body(Mono.just(body), String.class)
+        .retrieve()
+        .bodyToMono(String.class)
+        .block();
+
+    //TODO: What about error handling?
+    // some examples here https://howtodoinjava.com/spring-webflux/webclient-get-post-example/
   }
 
 

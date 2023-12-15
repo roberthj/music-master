@@ -1,8 +1,10 @@
 package com.roberthj.musicmaster.resource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.roberthj.musicmaster.client.SpotifyApiAuth;
 import com.roberthj.musicmaster.service.MusicMasterService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,10 +24,10 @@ public class MusicMasterController {
     return "Hello!";
   }
 
-  @GetMapping("/lookup_artist")
-  public String lookUpArtist() {
+  @GetMapping("/lookup_artist/{artist}")
+  public String lookUpArtist(@PathVariable(value = "artist") String artist) throws JsonProcessingException {
 
-    var artist_id = musicMasterService.lookupArtistId();
+    var artist_id = musicMasterService.lookupArtistId(artist);
     return artist_id;
   }
 }

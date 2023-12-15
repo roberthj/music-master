@@ -29,7 +29,6 @@ public class SpotifyApiAuth {
 
     // Encode client_id and client_secret in Base64
     String credentials = clientId + ":" + clientSecret;
-    // String encodedCredentials = new String(Base64.encode(credentials.getBytes()));
 
     String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
 
