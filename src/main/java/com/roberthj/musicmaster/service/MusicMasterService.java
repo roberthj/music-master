@@ -1,69 +1,49 @@
 package com.roberthj.musicmaster.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.roberthj.musicmaster.client.SpotifyApiClient;
-import com.roberthj.musicmaster.client.TicketMasterApiClient;
-import java.net.URI;
-import org.springframework.beans.factory.annotation.Value;
+import com.roberthj.musicmaster.client.SpotifyApiClientImpl;
+import com.roberthj.musicmaster.client.TicketMasterApiClientImpl;
+import com.roberthj.musicmaster.models.Artist;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Comparator;
 
 @Service
 public class MusicMasterService {
 
-  @Value("${ticketmaster.api.key}")
-  private String apiKey;
+  private final SpotifyApiClientImpl spotifyApiClientImpl;
 
-  public static final String BASE_URI_SPOTIFY = "https://api.spotify.com/v1";
-
-  public static final String BASE_URI_TICKETMASTER = "http://app.ticketmaster.com/discovery/v2/";
-  private final SpotifyApiClient spotifyApiClient;
-
-  private final TicketMasterApiClient ticketMasterApiClient;
+  private final TicketMasterApiClientImpl ticketMasterApiClientImpl;
 
   public MusicMasterService(
-      final SpotifyApiClient spotifyApiClient, final TicketMasterApiClient ticketMasterApiClient) {
-    this.spotifyApiClient = spotifyApiClient;
-    this.ticketMasterApiClient = ticketMasterApiClient;
+          final SpotifyApiClientImpl spotifyApiClientImpl, final TicketMasterApiClientImpl ticketMasterApiClientImpl) {
+    this.spotifyApiClientImpl = spotifyApiClientImpl;
+    this.ticketMasterApiClientImpl = ticketMasterApiClientImpl;
   }
 
   public String lookupArtistId(String artist) throws JsonProcessingException {
 
-    var uri = generateFullSearchUri("/search", "artist", artist);
+    var artistResponse = spotifyApiClientImpl.getArtistByName(artist);
 
-    var artistResponse = spotifyApiClient.getSyncronously(uri);
+    // Todo: Pick only if name matches and highest popularity
 
-    // Todo: Parse response and pick the most popular artist if more than one exists
+    var mostPopularArtist = artistResponse
+            .stream()
+            .filter(item -> item.getName().equalsIgnoreCase(artist))
+            .max(Comparator.comparing(Artist::getPopularity)).get(); //TODO: Handle optional
 
-    return artistResponse;
+
+    return "artistResponse";
   }
 
   public String lookupEvent(String artist) {
 
-    var ticketmasterUri = generateFullTicketmasterUri("/events.json", artist, apiKey);
 
-    var eventResponse = ticketMasterApiClient.findEventsForArtist(ticketmasterUri);
+    var eventResponse = ticketMasterApiClientImpl.findEventsForArtist(artist);
 
     // Todo: Parse response and pick the most popular artist if more than one exists
 
     return eventResponse;
   }
 
-  private URI generateFullSearchUri(String path, String type, String value) {
-
-    return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + path)
-        .queryParam("type", type)
-        .queryParam("q", value)
-        .build(true)
-        .toUri();
-  }
-
-  private URI generateFullTicketmasterUri(String path, String keyword, String apiKey) {
-
-    return UriComponentsBuilder.fromUriString(BASE_URI_TICKETMASTER + path)
-        .queryParam("keyword", keyword)
-        .queryParam("apikey", apiKey)
-        .build(true)
-        .toUri();
-  }
 }
