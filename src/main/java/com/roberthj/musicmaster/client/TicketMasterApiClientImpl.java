@@ -1,11 +1,14 @@
 package com.roberthj.musicmaster.client;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.roberthj.musicmaster.models.ticketmasterapiresponse.EventsRoot;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 
 @Service
@@ -13,7 +16,7 @@ public class TicketMasterApiClientImpl implements TicketMasterApiClient {
 
   public static final String BASE_URI_TICKETMASTER = "http://app.ticketmaster.com/discovery/v2/";
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @Value("${ticketmaster.api.key}")
   private String apiKey;
@@ -29,7 +32,7 @@ public class TicketMasterApiClientImpl implements TicketMasterApiClient {
 
 
 
-  public String findEventsForArtist(String artist) {
+  public String findEventsForArtist(String artist) throws IOException {
 
     var uri = generateFullTicketmasterUri("/events.json", artist, apiKey);
 
@@ -37,7 +40,10 @@ public class TicketMasterApiClientImpl implements TicketMasterApiClient {
 
     var response = httpWebClient.getSyncronously(uri, headers);
 
-   //var responseObject = objectMapper.readValues(response, EventsRoot.class);
+   var responseObject = objectMapper.readValue(response, EventsRoot.class);
+
+  //TODO: deal with pagination to get all events
+
 
     return "";
   }

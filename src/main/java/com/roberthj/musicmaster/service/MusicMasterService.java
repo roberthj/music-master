@@ -1,11 +1,11 @@
 package com.roberthj.musicmaster.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.roberthj.musicmaster.client.SpotifyApiClientImpl;
 import com.roberthj.musicmaster.client.TicketMasterApiClientImpl;
 import com.roberthj.musicmaster.models.Artist;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Comparator;
 
 @Service
@@ -21,7 +21,7 @@ public class MusicMasterService {
     this.ticketMasterApiClientImpl = ticketMasterApiClientImpl;
   }
 
-  public String findEventByArtistName(String artist) throws JsonProcessingException {
+  public String findEventByArtistName(String artist) throws IOException {
 
     var artistResponse = spotifyApiClientImpl.getArtistByName(artist);
 
@@ -48,7 +48,7 @@ public class MusicMasterService {
 
 
 
-  public String lookupEvent(String artist) {
+  public String lookupEvent(String artist) throws IOException {
 
 
     var eventResponse = ticketMasterApiClientImpl.findEventsForArtist(artist);

@@ -1,10 +1,12 @@
 package com.roberthj.musicmaster.models.ticketmasterapiresponse;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EventsRoot {
     private Embedded _embedded;
     private Links _links;
