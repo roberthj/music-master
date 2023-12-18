@@ -1,29 +1,31 @@
 package com.roberthj.musicmaster.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.roberthj.musicmaster.models.artistapiresponse.ExternalUrls;
-import com.roberthj.musicmaster.models.artistapiresponse.Followers;
-import com.roberthj.musicmaster.models.artistapiresponse.Image;
+import com.roberthj.musicmaster.models.spotifyapiresponse.ExternalUrls;
+import com.roberthj.musicmaster.models.spotifyapiresponse.Followers;
+import com.roberthj.musicmaster.models.spotifyapiresponse.Image;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 public class Artist {
 
   @JsonProperty("external_urls")
-  public ExternalUrls externalUrls;
-  public Followers followers;
-  public ArrayList<String> genres;
-  public String href;
-  public String id;
-  public ArrayList<Image> images;
-  public String name;
-  public int popularity;
-  public String type;
-  public String uri;
+  private ExternalUrls externalUrls;
+  private Followers followers;
+  private ArrayList<String> genres;
+  private String href;
+  private String id;
+  private ArrayList<Image> images;
+  private String name;
+  private int popularity;
+  private String type;
+  private String uri;
+  private List<Artist> relatedArtists;
 
   public ExternalUrls getExternalUrls() {
     return externalUrls;
@@ -103,5 +105,13 @@ public class Artist {
 
   public void setUri(String uri) {
     this.uri = uri;
+  }
+
+  public List<Artist> getRelatedArtists() {
+    return relatedArtists;
+  }
+
+  public void setRelatedArtists(List<Artist> relatedArtists) {
+    this.relatedArtists = relatedArtists;
   }
 }

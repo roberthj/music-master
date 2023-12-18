@@ -1,4 +1,4 @@
-package com.roberthj.musicmaster.models.artistapiresponse;
+package com.roberthj.musicmaster.models.spotifyapiresponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -56,5 +56,13 @@ public class Item {
     }
 
 
+    @Getter
+    @Setter
+    public static class RelatedArtistsRoot {
+        private ArrayList<Item> artists;
 
+        public ArrayList<Item> getArtists() {
+            return artists;
+        }
+    }
 }

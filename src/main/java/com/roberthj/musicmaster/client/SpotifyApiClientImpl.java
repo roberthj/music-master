@@ -3,7 +3,8 @@ package com.roberthj.musicmaster.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roberthj.musicmaster.models.Artist;
-import com.roberthj.musicmaster.models.artistapiresponse.Root;
+import com.roberthj.musicmaster.models.spotifyapiresponse.ArtistsRoot;
+import com.roberthj.musicmaster.models.spotifyapiresponse.Item;
 import java.net.URI;
 import java.util.Base64;
 import java.util.List;
@@ -43,9 +44,9 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
         var response = httpWebClient.getSyncronously(uri, headers);
 
-    var responseObject = objectMapper.readValue(response, Root.class);
+    var responseObject = objectMapper.readValue(response, ArtistsRoot.class);
 
-    return extractArtist(responseObject);
+    return extractArtist(responseObject.getArtists().getItems());
 
   }
 
@@ -59,9 +60,12 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
         var response = httpWebClient.getSyncronously(uri, headers);
 
-        var responseObject = objectMapper.readValue(response, Root.class);
+        var responseObject = objectMapper.readValue(response, Item.RelatedArtistsRoot.class);
 
-        return extractArtist(responseObject);
+
+        var uu =  extractArtist(responseObject.getArtists());
+
+        return uu;
     }
 
     private URI generateFullSearchUri(String path, String type, String value) {
@@ -112,9 +116,7 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
     return authResponse.getAccessToken();
   }
 
-  private List<Artist> extractArtist(Root responseObject) {
-
-      var items = responseObject.artists.getItems();
+  private List<Artist> extractArtist(List<Item> items) {
 
     return items.stream()
         .map(

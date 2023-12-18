@@ -1,4 +1,4 @@
-package com.roberthj.musicmaster.models.artistapiresponse;
+package com.roberthj.musicmaster.models.spotifyapiresponse;
 
 import lombok.Getter;
 import lombok.Setter;

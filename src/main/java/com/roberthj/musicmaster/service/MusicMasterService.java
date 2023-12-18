@@ -36,11 +36,17 @@ public class MusicMasterService {
 
     var relatedArtists = spotifyApiClientImpl.getRelatedArtists(mostPopularArtist.getId());
 
-    var eventResponse = ticketMasterApiClientImpl.findEventsForArtist(mostPopularArtist.name); //TODO: add country parameter as well
+    mostPopularArtist.setRelatedArtists(relatedArtists);
+
+    var eventResponse = ticketMasterApiClientImpl.findEventsForArtist(mostPopularArtist.getName()); //TODO: add country parameter as well
     //TODO: Find events for related artists as well
 
     return "artistResponse";
   }
+
+
+
+
 
   public String lookupEvent(String artist) {
 

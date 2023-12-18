@@ -1,15 +1,19 @@
 package com.roberthj.musicmaster.client;
 
-import java.net.URI;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+
 @Service
 public class TicketMasterApiClientImpl implements TicketMasterApiClient {
 
   public static final String BASE_URI_TICKETMASTER = "http://app.ticketmaster.com/discovery/v2/";
+
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${ticketmaster.api.key}")
   private String apiKey;
@@ -24,14 +28,18 @@ public class TicketMasterApiClientImpl implements TicketMasterApiClient {
 
 
 
+
   public String findEventsForArtist(String artist) {
 
     var uri = generateFullTicketmasterUri("/events.json", artist, apiKey);
 
     HttpHeaders headers = new HttpHeaders();
 
-    return httpWebClient.getSyncronously(uri, headers);
+    var response = httpWebClient.getSyncronously(uri, headers);
 
+   //var responseObject = objectMapper.readValues(response, EventsRoot.class);
+
+    return "";
   }
 
   private URI generateFullTicketmasterUri(String path, String keyword, String apiKey) {
