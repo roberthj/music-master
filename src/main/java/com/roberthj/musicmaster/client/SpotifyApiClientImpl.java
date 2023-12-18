@@ -39,11 +39,9 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
     var uri = generateFullSearchUri("/search", "artist", artist);
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", "application/json");
-    headers.add("Authorization", "Bearer " + accessToken);
+        HttpHeaders headers = getHttpHeaders(accessToken);
 
-    var response = httpWebClient.getSyncronously(uri, headers);
+        var response = httpWebClient.getSyncronously(uri, headers);
 
     var responseObject = objectMapper.readValue(response, Root.class);
 
@@ -51,7 +49,22 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
   }
 
-  private URI generateFullSearchUri(String path, String type, String value) {
+
+    public List<Artist> getRelatedArtists(String id) throws JsonProcessingException {
+        var accessToken = getAccessToken();
+
+        var uri = generateRelatedArtistsUri(id, "/related-artists");
+
+        HttpHeaders headers = getHttpHeaders(accessToken);
+
+        var response = httpWebClient.getSyncronously(uri, headers);
+
+        var responseObject = objectMapper.readValue(response, Root.class);
+
+        return extractArtist(responseObject);
+    }
+
+    private URI generateFullSearchUri(String path, String type, String value) {
 
     return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + path)
             .queryParam("type", type)
@@ -59,6 +72,20 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
             .build(true)
             .toUri();
   }
+
+    private URI generateRelatedArtistsUri(String id, String path) {
+
+        return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY +"/artists/" +id + path)
+                .build(true)
+                .toUri();
+    }
+
+    private static HttpHeaders getHttpHeaders(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        headers.add("Authorization", "Bearer " + accessToken);
+        return headers;
+    }
 
   private String getAccessToken() throws JsonProcessingException {
 

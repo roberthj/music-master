@@ -8,4 +8,7 @@ import java.util.List;
 public interface SpotifyApiClient {
 
     List<Artist> getArtistByName(String artist) throws JsonProcessingException;
+
+    List<Artist> getRelatedArtists(String id) throws JsonProcessingException;
+
 }

@@ -21,7 +21,7 @@ public class MusicMasterService {
     this.ticketMasterApiClientImpl = ticketMasterApiClientImpl;
   }
 
-  public String lookupArtistId(String artist) throws JsonProcessingException {
+  public String findEventByArtistName(String artist) throws JsonProcessingException {
 
     var artistResponse = spotifyApiClientImpl.getArtistByName(artist);
 
@@ -32,6 +32,12 @@ public class MusicMasterService {
             .filter(item -> item.getName().equalsIgnoreCase(artist))
             .max(Comparator.comparing(Artist::getPopularity)).get(); //TODO: Handle optional
 
+    //TODO: Get related artists
+
+    var relatedArtists = spotifyApiClientImpl.getRelatedArtists(mostPopularArtist.getId());
+
+    var eventResponse = ticketMasterApiClientImpl.findEventsForArtist(mostPopularArtist.name); //TODO: add country parameter as well
+    //TODO: Find events for related artists as well
 
     return "artistResponse";
   }
@@ -41,7 +47,6 @@ public class MusicMasterService {
 
     var eventResponse = ticketMasterApiClientImpl.findEventsForArtist(artist);
 
-    // Todo: Parse response and pick the most popular artist if more than one exists
 
     return eventResponse;
   }

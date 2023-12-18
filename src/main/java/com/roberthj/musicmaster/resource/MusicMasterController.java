@@ -23,10 +23,10 @@ public class MusicMasterController {
     return "Hello!";
   }
 
-  @GetMapping("/lookup_artist/{artist}")
-  public String lookUpArtist(@PathVariable(value = "artist") String artist) throws JsonProcessingException {
+  @GetMapping("/find_events/{artist}")
+  public String findEventByArtistName(@PathVariable(value = "artist") String artist) throws JsonProcessingException {
 
-    return  musicMasterService.lookupArtistId(artist);
+    return  musicMasterService.findEventByArtistName(artist);
 
   }
 
