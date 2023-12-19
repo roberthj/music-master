@@ -2,6 +2,7 @@ package com.roberthj.musicmaster.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -22,6 +23,8 @@ public class HttpWebClient {
               .uri(uri)
               .headers(h -> h.addAll(headers))
               .retrieve()
+              .onStatus(httpStatus -> !httpStatus.is2xxSuccessful(),
+                      clientResponse -> handleErrorResponse(clientResponse.statusCode()))
               .bodyToMono(String.class)
               .block();
 
@@ -43,5 +46,11 @@ public class HttpWebClient {
 
         //TODO: What about error handling?
         // some examples here https://howtodoinjava.com/spring-webflux/webclient-get-post-example/
+    }
+
+    private Mono<? extends Throwable> handleErrorResponse(HttpStatusCode statusCode) {
+
+        // Handle non-success status codes here (e.g., logging or custom error handling)
+        return Mono.error(new Exception("Failed to fetch. Status code: " + statusCode));
     }
 }

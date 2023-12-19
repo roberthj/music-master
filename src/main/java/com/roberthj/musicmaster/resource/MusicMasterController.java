@@ -1,5 +1,6 @@
 package com.roberthj.musicmaster.resource;
 
+import com.roberthj.musicmaster.models.Artist;
 import com.roberthj.musicmaster.service.MusicMasterService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,9 +26,10 @@ public class MusicMasterController {
   }
 //TODO: Fix all exception handling
   @GetMapping("/find_events/{artist}")
-  public String findEventByArtistName(@PathVariable(value = "artist") String artist) throws IOException {
+  public Artist findEventByArtistName(@PathVariable(value = "artist") String artist) throws IOException {
 
-    return  musicMasterService.findEventByArtistName(artist);
+    return musicMasterService.findEventByArtistName(artist);
+
 
   }
 
@@ -37,4 +39,8 @@ public class MusicMasterController {
     return  musicMasterService.lookupEvent(artist);
 
   }
+
+  //TODO: Add endpoint for saving my events in db
+
+  //TODO: Add endpoint for saving my fetching my events from db
 }

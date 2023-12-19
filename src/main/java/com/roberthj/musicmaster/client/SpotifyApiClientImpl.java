@@ -5,14 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roberthj.musicmaster.models.Artist;
 import com.roberthj.musicmaster.models.spotifyapiresponse.ArtistsRoot;
 import com.roberthj.musicmaster.models.spotifyapiresponse.Item;
-import java.net.URI;
-import java.util.Base64;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.Base64;
+import java.util.List;
 
 @Service
 public class SpotifyApiClientImpl implements SpotifyApiClient {
@@ -72,7 +74,7 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
     return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + path)
             .queryParam("type", type)
-            .queryParam("q", value)
+            .queryParam("q", URLEncoder.encode(value))
             .build(true)
             .toUri();
   }
@@ -134,7 +136,10 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
               artist.setUri(item.getUri());
 
               return artist;
-            }).toList();
+            })
+            .limit(5) //Due to rate limiting in TM api
+            //TODO: create a better solution for this rate limiting
+            .toList();
 
   }
 

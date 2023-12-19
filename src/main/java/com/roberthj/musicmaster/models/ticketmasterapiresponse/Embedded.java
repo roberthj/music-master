@@ -7,6 +7,14 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class Embedded {
-    private ArrayList<Event> events;
+    private ArrayList<EventTmResponse> events;
     private ArrayList<Venue> venues;
+
+    public ArrayList<EventTmResponse> getEvents() {
+        return events;
+    }
+
+    public ArrayList<Venue> getVenues() {
+        return venues;
+    }
 }

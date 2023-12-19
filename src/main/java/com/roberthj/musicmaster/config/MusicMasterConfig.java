@@ -2,14 +2,22 @@ package com.roberthj.musicmaster.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class MusicMasterConfig {
 
-  @Bean
-  public WebClient webClient() {
-    return WebClient.builder().build();
-  }
+    @Bean
+    public WebClient webClient() {
+        final int size = 16 * 1024 * 1024;
+        final ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(size))
+                .build();
+        return WebClient
+                .builder()
+                .exchangeStrategies(strategies)
+                .build();
+    }
 
 }

@@ -8,4 +8,8 @@ import lombok.Setter;
 public class Country {
     private String name;
     private String countryCode;
+
+    public String getName() {
+        return name;
+    }
 }

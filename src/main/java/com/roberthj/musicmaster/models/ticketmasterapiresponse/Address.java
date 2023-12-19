@@ -7,4 +7,8 @@ import lombok.Setter;
 @Setter
 public class Address {
     private String line1;
+
+    public String getLine1() {
+        return line1;
+    }
 }

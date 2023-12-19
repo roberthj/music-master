@@ -25,7 +25,9 @@ public class Artist {
   private int popularity;
   private String type;
   private String uri;
+  private List<Event> events;
   private List<Artist> relatedArtists;
+
 
   public ExternalUrls getExternalUrls() {
     return externalUrls;
@@ -113,5 +115,12 @@ public class Artist {
 
   public void setRelatedArtists(List<Artist> relatedArtists) {
     this.relatedArtists = relatedArtists;
+  }
+  public List<Event> getEvents() {
+    return events;
+  }
+
+  public void setEvents(List<Event> events) {
+    this.events = events;
   }
 }

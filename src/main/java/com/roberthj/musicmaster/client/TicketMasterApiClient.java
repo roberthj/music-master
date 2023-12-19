@@ -1,10 +1,11 @@
 package com.roberthj.musicmaster.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.roberthj.musicmaster.models.Event;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface TicketMasterApiClient {
 
-    String findEventsForArtist(String artist) throws IOException;
+    List<Event> findEventsForArtist(String artist) throws IOException;
 }

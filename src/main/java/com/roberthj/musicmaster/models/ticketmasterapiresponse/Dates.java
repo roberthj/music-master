@@ -12,4 +12,8 @@ public class Dates {
     private String timezone;
     private Status status;
     private boolean spanMultipleDays;
+
+    public Start getStart() {
+        return start;
+    }
 }
