@@ -137,7 +137,7 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
               return artist;
             })
-            .limit(5) //Due to rate limiting in TM api
+            //.limit(5) //Due to rate limiting in TM api
             //TODO: create a better solution for this rate limiting
             .toList();
 

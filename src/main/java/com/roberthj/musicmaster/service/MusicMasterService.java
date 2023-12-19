@@ -55,8 +55,11 @@ public class MusicMasterService {
                 .stream()
                 .forEach(relatedArtist -> {
                     try {
+                        Thread.sleep(200);  //TODO: Make more sophisticated.API can only take 5 requests per second
                         relatedArtist.setEvents(getEventsForArtist(relatedArtist.getName()));
                     } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 });
