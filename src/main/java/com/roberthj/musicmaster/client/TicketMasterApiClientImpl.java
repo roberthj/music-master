@@ -23,13 +23,13 @@ public class TicketMasterApiClientImpl implements TicketMasterApiClient {
 
     private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    @Value("${ticketmaster.api.key}")
     private String apiKey;
 
     private final HttpWebClient httpWebClient;
 
-    public TicketMasterApiClientImpl(HttpWebClient httpWebClient) {
+    public TicketMasterApiClientImpl(HttpWebClient httpWebClient, @Value("${ticketmaster.api.key}") String apiKey) {
         this.httpWebClient = httpWebClient;
+        this.apiKey = apiKey;
     }
 
     public List<Event> findEventsForArtist(String artist) throws IOException {
@@ -61,31 +61,30 @@ public class TicketMasterApiClientImpl implements TicketMasterApiClient {
     }
 
     private List<Event> extractEvent(ArrayList<EventTmResponse> events) {
-        //TODO: change to builder?
 
         return events.stream()
                 .map(
                         item -> {
 
-                            var event = new Event();
-                            event.setName(item.getName());
-                            event.setType(item.getType());
-                            event.setId(item.getId());
-                            event.setUrl(item.getUrl());
-                            event.setStartDate(item.getDates().getStart().getDateTime());
-                            event.setNotes(item.getPleaseNote());
-
+                            var event =
+                                    Event.builder()
+                                            .name(item.getName())
+                                            .type(item.getType())
+                                            .id(item.getId())
+                                            .url(item.getUrl())
+                                            .startDate(item.getDates().getStart().getLocalDate())
+                                            .notes(item.getPleaseNote());
                             if (item.getEmbedded() != null) {
                                 var venue = item.getEmbedded().getVenues().get(0);
+                                event.venue(venue.getName())
+                                        .address(venue.getAddress().getLine1())
+                                        .city(venue.getCity().getName())
+                                        .country(venue.getCountry().getName());
 
-                                event.setVenue(venue.getName());
-                                event.setAddress(venue.getAddress().getLine1());
-                                event.setCity(venue.getCity().getName());
-                                event.setCountry(venue.getCountry().getName());
+
                             }
+                            return event.build();
 
-
-                            return event;
                         }).toList();
 
     }

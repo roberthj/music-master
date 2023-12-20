@@ -8,7 +8,4 @@ import lombok.Setter;
 public class Address {
     private String line1;
 
-    public String getLine1() {
-        return line1;
-    }
 }

@@ -1,5 +1,6 @@
 package com.roberthj.musicmaster.models.ticketmasterapiresponse;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,45 +22,7 @@ public class EventTmResponse {
     private String pleaseNote;
     private ArrayList<PriceRange> priceRanges;
     private Links _links;
-    private Embedded _embedded;
-
-    public String getName() {
-        return name;
-    }
-    public String getType() {
-        return type;
-    }
-    public String getId() {
-        return id;
-    }
-    public boolean getTest() {
-        return test;
-    }
-    public String getUrl() {
-        return url;
-    }
-    public String getLocale() {
-        return locale;
-    }
-
-    public ArrayList<Image> getImages() {
-        return images;
-    }
-    public Sales getSales() {
-        return sales;
-    }
-
-    public Dates getDates() {
-        return dates;
-    }
-    public String getPleaseNote() {
-        return pleaseNote;
-    }
-
-    public Embedded getEmbedded() {
-        return _embedded;
-    }
-
-
+    @JsonProperty("_embedded")
+    private Embedded embedded;
 
 }

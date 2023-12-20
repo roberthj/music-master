@@ -14,7 +14,4 @@ public class Embedded {
         return events;
     }
 
-    public ArrayList<Venue> getVenues() {
-        return venues;
-    }
 }

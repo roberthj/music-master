@@ -15,7 +15,4 @@ public class Start {
     private boolean timeTBA;
     private boolean noSpecificTime;
 
-    public Date getDateTime() {
-        return dateTime;
-    }
 }

@@ -1,12 +1,14 @@
 package com.roberthj.musicmaster.models.spotifyapiresponse;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Artists {
     private String href;
     private ArrayList<Item> items;
@@ -16,7 +18,4 @@ public class Artists {
     private Object previous;
     private int total;
 
-    public ArrayList<Item> getItems() {
-        return items;
-    }
 }

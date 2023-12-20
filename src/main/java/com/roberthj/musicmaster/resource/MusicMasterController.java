@@ -30,7 +30,6 @@ public class MusicMasterController {
 
     return musicMasterService.findEventByArtistName(artist);
 
-
   }
 
   @GetMapping("/lookup_event/{artist}")

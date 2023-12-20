@@ -1,7 +1,7 @@
 package com.roberthj.musicmaster.service;
 
-import com.roberthj.musicmaster.client.SpotifyApiClientImpl;
-import com.roberthj.musicmaster.client.TicketMasterApiClientImpl;
+import com.roberthj.musicmaster.client.SpotifyApiClient;
+import com.roberthj.musicmaster.client.TicketMasterApiClient;
 import com.roberthj.musicmaster.models.Artist;
 import com.roberthj.musicmaster.models.Event;
 import org.springframework.http.HttpStatus;
@@ -16,19 +16,19 @@ import java.util.stream.Collectors;
 @Service
 public class MusicMasterService {
 
-    private final SpotifyApiClientImpl spotifyApiClientImpl;
+    private final SpotifyApiClient spotifyApiClient;
 
-    private final TicketMasterApiClientImpl ticketMasterApiClientImpl;
+    private final TicketMasterApiClient ticketMasterApiClient;
 
     public MusicMasterService(
-            final SpotifyApiClientImpl spotifyApiClientImpl, final TicketMasterApiClientImpl ticketMasterApiClientImpl) {
-        this.spotifyApiClientImpl = spotifyApiClientImpl;
-        this.ticketMasterApiClientImpl = ticketMasterApiClientImpl;
+            final SpotifyApiClient spotifyApiClient, final TicketMasterApiClient ticketMasterApiClient) {
+        this.spotifyApiClient = spotifyApiClient;
+        this.ticketMasterApiClient = ticketMasterApiClient;
     }
 
     public Artist findEventByArtistName(String artist) throws IOException {
 
-        var artistResponse = spotifyApiClientImpl.getArtistByName(artist);
+        var artistResponse = spotifyApiClient.getArtistByName(artist);
 
         // Todo: Pick only if name matches and highest popularity
 
@@ -48,14 +48,14 @@ public class MusicMasterService {
         var mostPopularArtist = mostPopularArtistOptional.get();
         mostPopularArtist.setEvents(getEventsForArtist(mostPopularArtist.getName()));
 
-        var relatedArtists = spotifyApiClientImpl.getRelatedArtists(mostPopularArtist.getId());
+        var relatedArtists = spotifyApiClient.getRelatedArtists(mostPopularArtist.getId());
 
         //Add events
         relatedArtists
                 .stream()
                 .forEach(relatedArtist -> {
                     try {
-                        Thread.sleep(200);  //TODO: Make more sophisticated.API can only take 5 requests per second
+                        Thread.sleep(200);  //TODO: Make more sophisticated. API can only take 5 requests per second
                         relatedArtist.setEvents(getEventsForArtist(relatedArtist.getName()));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -64,24 +64,21 @@ public class MusicMasterService {
                     }
                 });
 
-        //TODO: Can this be done in the stem above already?
-        var relaterArtistsWithEvents = relatedArtists.stream()
+        //TODO: Can this be done in the step above already?
+        var relatedArtistsWithEvents = relatedArtists.stream()
                 .filter(a -> a.getEvents() != null)
                 .collect(Collectors.toList());
 
-        //Add related artists
-        //TODO: only add if they have events
-        mostPopularArtist.setRelatedArtists(relaterArtistsWithEvents);
+        mostPopularArtist.setRelatedArtists(relatedArtistsWithEvents);
 
-        //var eventResponse = getEventsForArtist(mostPopularArtist.getName()); //TODO: add country parameter as well
-        //TODO: Find events for related artists as well
+        //TODO: add city parameter as well
 
         return mostPopularArtist;
 
     }
 
     private List<Event> getEventsForArtist(String artistName) throws IOException {
-        return ticketMasterApiClientImpl.findEventsForArtist(artistName);
+        return ticketMasterApiClient.findEventsForArtist(artistName);
     }
 
 

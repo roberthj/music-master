@@ -23,19 +23,4 @@ public class Venue {
     private UpcomingEvents upcomingEvents;
     private Links _links;
 
-    public String getName() {
-        return name;
-    }
-
-    public City getCity() {
-        return city;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
 }

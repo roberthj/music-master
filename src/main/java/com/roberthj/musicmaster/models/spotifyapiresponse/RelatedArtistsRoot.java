@@ -1,12 +1,13 @@
 package com.roberthj.musicmaster.models.spotifyapiresponse;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 @Getter
 @Setter
-@Builder
-public class ExternalUrls {
-    private String spotify;
+public class RelatedArtistsRoot {
+    private ArrayList<Item> artists;
+
 }

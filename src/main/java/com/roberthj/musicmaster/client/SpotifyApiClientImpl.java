@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roberthj.musicmaster.models.Artist;
 import com.roberthj.musicmaster.models.spotifyapiresponse.ArtistsRoot;
 import com.roberthj.musicmaster.models.spotifyapiresponse.Item;
+import com.roberthj.musicmaster.models.spotifyapiresponse.RelatedArtistsRoot;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,18 +20,18 @@ import java.util.List;
 @Service
 public class SpotifyApiClientImpl implements SpotifyApiClient {
 
-  public static final String BASE_URI_SPOTIFY = "https://api.spotify.com/v1";
+    public static final String BASE_URI_SPOTIFY = "https://api.spotify.com/v1";
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-  //TODO: Add interface before this class
-  @Value("${spotify.api.client_id}")
-  private String clientId;
+    //TODO: Add interface before this class
+    @Value("${spotify.api.client_id}")
+    private String clientId;
 
-  @Value("${spotify.api.client_secret}")
-  private String clientSecret;
+    @Value("${spotify.api.client_secret}")
+    private String clientSecret;
 
-  private final HttpWebClient httpWebClient;
+    private final HttpWebClient httpWebClient;
 
     public SpotifyApiClientImpl(HttpWebClient httpWebClient) {
         this.httpWebClient = httpWebClient;
@@ -38,19 +39,19 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
     public List<Artist> getArtistByName(String artist) throws JsonProcessingException {
 
-    var accessToken = getAccessToken();
+        var accessToken = getAccessToken();
 
-    var uri = generateFullSearchUri("/search", "artist", artist);
+        var uri = generateFullSearchUri("/search", "artist", artist);
 
         HttpHeaders headers = getHttpHeaders(accessToken);
 
         var response = httpWebClient.getSyncronously(uri, headers);
 
-    var responseObject = objectMapper.readValue(response, ArtistsRoot.class);
+        var responseObject = objectMapper.readValue(response, ArtistsRoot.class);
 
-    return extractArtist(responseObject.getArtists().getItems());
+        return extractArtist(responseObject.getArtists().getItems());
 
-  }
+    }
 
 
     public List<Artist> getRelatedArtists(String id) throws JsonProcessingException {
@@ -62,26 +63,26 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
         var response = httpWebClient.getSyncronously(uri, headers);
 
-        var responseObject = objectMapper.readValue(response, Item.RelatedArtistsRoot.class);
+        var responseObject = objectMapper.readValue(response, RelatedArtistsRoot.class);
 
 
-        var uu =  extractArtist(responseObject.getArtists());
+        var uu = extractArtist(responseObject.getArtists());
 
         return uu;
     }
 
     private URI generateFullSearchUri(String path, String type, String value) {
 
-    return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + path)
-            .queryParam("type", type)
-            .queryParam("q", URLEncoder.encode(value))
-            .build(true)
-            .toUri();
-  }
+        return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + path)
+                .queryParam("type", type)
+                .queryParam("q", URLEncoder.encode(value))
+                .build(true)
+                .toUri();
+    }
 
     private URI generateRelatedArtistsUri(String id, String path) {
 
-        return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY +"/artists/" +id + path)
+        return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + "/artists/" + id + path)
                 .build(true)
                 .toUri();
     }
@@ -93,55 +94,55 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
         return headers;
     }
 
-  private String getAccessToken() throws JsonProcessingException {
+    private String getAccessToken() throws JsonProcessingException {
 
-    var tokenUrl =
-        UriComponentsBuilder.fromUriString("https://accounts.spotify.com/api/token")
-            .build(true)
-            .toUri();
+        var tokenUrl =
+                UriComponentsBuilder.fromUriString("https://accounts.spotify.com/api/token")
+                        .build(true)
+                        .toUri();
 
-    String credentials = clientId + ":" + clientSecret;
+        String credentials = clientId + ":" + clientSecret;
 
-    String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
 
-    HttpHeaders authHeaders = new HttpHeaders();
-    authHeaders.set("Authorization", "Basic " + encodedCredentials);
-    authHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpHeaders authHeaders = new HttpHeaders();
+        authHeaders.set("Authorization", "Basic " + encodedCredentials);
+        authHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-    String requestBody = "grant_type=client_credentials";
+        String requestBody = "grant_type=client_credentials";
 
-    var authTokenResponse = httpWebClient.postSyncronously(tokenUrl, authHeaders, requestBody);
+        var authTokenResponse = httpWebClient.postSyncronously(tokenUrl, authHeaders, requestBody);
 
-    SpotifyApiAuthResponse
-        authResponse = objectMapper.readValue(authTokenResponse, SpotifyApiAuthResponse.class);
+        SpotifyApiAuthResponse
+                authResponse = objectMapper.readValue(authTokenResponse, SpotifyApiAuthResponse.class);
 
-    return authResponse.getAccessToken();
-  }
+        return authResponse.getAccessToken();
+    }
 
-  private List<Artist> extractArtist(List<Item> items) {
+    private List<Artist> extractArtist(List<Item> items) {
 
-    return items.stream()
-        .map(
-            item -> {
-              var artist = new Artist();
-              artist.setExternalUrls(item.getExternalUrls());
-              artist.setFollowers(item.getFollowers());
-              artist.setGenres(item.getGenres());
-              artist.setHref(item.getHref());
-              artist.setId(item.getId());
-              artist.setImages(item.getImages());
-              artist.setName(item.getName());
-              artist.setPopularity(item.getPopularity());
-              artist.setType(item.getType());
-              artist.setUri(item.getUri());
+        return items.stream()
+                .map(
+                        item -> {
+                            return Artist
+                                    .builder()
+                                    .externalUrls(item.getExternalUrls())
+                                    .followers(item.getFollowers())
+                                    .genres(item.getGenres())
+                                    .href(item.getHref())
+                                    .id(item.getId())
+                                    .images(item.getImages())
+                                    .name(item.getName())
+                                    .popularity(item.getPopularity())
+                                    .type(item.getType())
+                                    .uri(item.getUri())
+                                    .build();
 
-              return artist;
-            })
-            //.limit(5) //Due to rate limiting in TM api
-            //TODO: create a better solution for this rate limiting
-            .toList();
+                        })
+                .toList();
 
-  }
+
+    }
 
 
 }

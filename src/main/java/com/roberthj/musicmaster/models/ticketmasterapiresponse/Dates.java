@@ -13,7 +13,4 @@ public class Dates {
     private Status status;
     private boolean spanMultipleDays;
 
-    public Start getStart() {
-        return start;
-    }
 }

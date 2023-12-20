@@ -22,47 +22,4 @@ public class Item {
     private String type;
     private String uri;
 
-
-    public ExternalUrls getExternalUrls() {
-        return externalUrls;
-    }
-
-    public Followers getFollowers() {
-        return followers;
-    }
-    public ArrayList<String> getGenres() {
-        return genres;
-    }
-    public String getHref() {
-        return href;
-    }
-    public String getId() {
-        return id;
-    }
-    public ArrayList<Image> getImages() {
-        return images;
-    }
-    public String getName() {
-        return name;
-    }
-    public int getPopularity() {
-        return popularity;
-    }
-    public String getType() {
-        return type;
-    }
-    public String getUri() {
-        return uri;
-    }
-
-
-    @Getter
-    @Setter
-    public static class RelatedArtistsRoot {
-        private ArrayList<Item> artists;
-
-        public ArrayList<Item> getArtists() {
-            return artists;
-        }
-    }
 }
