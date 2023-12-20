@@ -1,10 +1,8 @@
 package com.roberthj.musicmaster.models.spotifyapiresponse;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class Image {
     private int height;
     private String url;

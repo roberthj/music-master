@@ -24,17 +24,18 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    //TODO: Add interface before this class
-    @Value("${spotify.api.client_id}")
     private String clientId;
 
-    @Value("${spotify.api.client_secret}")
     private String clientSecret;
 
     private final HttpWebClient httpWebClient;
 
-    public SpotifyApiClientImpl(HttpWebClient httpWebClient) {
+    public SpotifyApiClientImpl(HttpWebClient httpWebClient,
+                                @Value("${spotify.api.client_id}") String clientId,
+                                @Value("${spotify.api.client_secret}") String clientSecret) {
         this.httpWebClient = httpWebClient;
+        this.clientId = clientId;
+        this.clientSecret=clientSecret;
     }
 
     public List<Artist> getArtistByName(String artist) throws JsonProcessingException {
@@ -55,7 +56,7 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
 
     public List<Artist> getRelatedArtists(String id) throws JsonProcessingException {
-        var accessToken = getAccessToken();
+        var accessToken = getAccessToken(); //TODO: can I resuse the token from the call before?
 
         var uri = generateRelatedArtistsUri(id, "/related-artists");
 
@@ -127,7 +128,6 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
                             return Artist
                                     .builder()
                                     .externalUrls(item.getExternalUrls())
-                                    .followers(item.getFollowers())
                                     .genres(item.getGenres())
                                     .href(item.getHref())
                                     .id(item.getId())
