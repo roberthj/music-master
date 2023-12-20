@@ -127,7 +127,7 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
                         item -> {
                             return Artist
                                     .builder()
-                                    .externalUrls(item.getExternalUrls())
+                                    .externalUrl(item.getExternalUrls().getSpotify())
                                     .genres(item.getGenres())
                                     .href(item.getHref())
                                     .id(item.getId())

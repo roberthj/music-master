@@ -1,7 +1,6 @@
 package com.roberthj.musicmaster.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.roberthj.musicmaster.models.spotifyapiresponse.ExternalUrls;
 import com.roberthj.musicmaster.models.spotifyapiresponse.Image;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.util.List;
 public class Artist {
 
   @JsonProperty("external_urls")
-  private ExternalUrls externalUrls;
+  private String externalUrl;
   private ArrayList<String> genres;
   private String href;
   private String id;

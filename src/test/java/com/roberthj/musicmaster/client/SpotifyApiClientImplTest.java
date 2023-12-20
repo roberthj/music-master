@@ -1,7 +1,6 @@
 package com.roberthj.musicmaster.client;
 
 import com.roberthj.musicmaster.models.Artist;
-import com.roberthj.musicmaster.models.spotifyapiresponse.ExternalUrls;
 import com.roberthj.musicmaster.models.spotifyapiresponse.Image;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,8 +115,6 @@ class SpotifyApiClientImplTest {
     }
 
     private List<Artist> getMockedListOfArtists() {
-        var externalUrls = new ExternalUrls();
-        externalUrls.setSpotify("https://open.spotify.com/artist/2ye2Wgw4gimLv2eAKyk1NB");
 
         var genres = new ArrayList<String>();
         genres.addAll(List.of("hard rock", "metal", "old school thrash", "rock", "thrash metal"));
@@ -126,7 +123,7 @@ class SpotifyApiClientImplTest {
         images.addAll(getImages());
 
         var artist = Artist.builder()
-                .externalUrls(externalUrls)
+                .externalUrl("https://open.spotify.com/artist/2ye2Wgw4gimLv2eAKyk1NB")
                 .genres(genres)
                 .href("https://api.spotify.com/v1/artists/2ye2Wgw4gimLv2eAKyk1NB")
                 .id("2ye2Wgw4gimLv2eAKyk1NB")
