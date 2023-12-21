@@ -104,7 +104,6 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
         if (apiTokenCache.getToken() == null || LocalDateTime.now().isAfter(apiTokenCache.getExpiresAt())) {
             generateAccessToken();
         }
-        System.out.println(apiTokenCache.getToken());
         return apiTokenCache.getToken();
     }
 
