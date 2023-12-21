@@ -14,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
@@ -28,17 +29,18 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
     private String clientSecret;
 
+    private SpotifyApiAuthCache apiTokenCache;
+
     private final HttpWebClient httpWebClient;
 
-    public SpotifyApiClientImpl(HttpWebClient httpWebClient,
-                                @Value("${spotify.api.client_id}") String clientId,
-                                @Value("${spotify.api.client_secret}") String clientSecret) {
+    public SpotifyApiClientImpl(HttpWebClient httpWebClient, @Value("${spotify.api.client_id}") String clientId, @Value("${spotify.api.client_secret}") String clientSecret) {
         this.httpWebClient = httpWebClient;
         this.clientId = clientId;
-        this.clientSecret=clientSecret;
+        this.clientSecret = clientSecret;
+        this.apiTokenCache = new SpotifyApiAuthCache();
     }
 
-    public List<Artist> getArtistByName(String artist) throws JsonProcessingException {
+    public List<Artist> getArtistByName(String artist) {
 
         var accessToken = getAccessToken();
 
@@ -48,14 +50,19 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
         var response = httpWebClient.getSyncronously(uri, headers);
 
-        var responseObject = objectMapper.readValue(response, ArtistsRoot.class);
+        ArtistsRoot responseObject = null;
+        try {
+            responseObject = objectMapper.readValue(response, ArtistsRoot.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e); //TODO: Make exception more specific?
+        }
 
         return extractArtist(responseObject.getArtists().getItems());
 
     }
 
 
-    public List<Artist> getRelatedArtists(String id) throws JsonProcessingException {
+    public List<Artist> getRelatedArtists(String id) {
         var accessToken = getAccessToken(); //TODO: can I resuse the token from the call before?
 
         var uri = generateRelatedArtistsUri(id, "/related-artists");
@@ -64,28 +71,26 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
         var response = httpWebClient.getSyncronously(uri, headers);
 
-        var responseObject = objectMapper.readValue(response, RelatedArtistsRoot.class);
+        RelatedArtistsRoot responseObject = null;
+        try {
+            responseObject = objectMapper.readValue(response, RelatedArtistsRoot.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
 
-        var uu = extractArtist(responseObject.getArtists());
+        return extractArtist(responseObject.getArtists());
 
-        return uu;
     }
 
     private URI generateFullSearchUri(String path, String type, String value) {
 
-        return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + path)
-                .queryParam("type", type)
-                .queryParam("q", URLEncoder.encode(value))
-                .build(true)
-                .toUri();
+        return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + path).queryParam("type", type).queryParam("q", URLEncoder.encode(value)).build(true).toUri();
     }
 
     private URI generateRelatedArtistsUri(String id, String path) {
 
-        return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + "/artists/" + id + path)
-                .build(true)
-                .toUri();
+        return UriComponentsBuilder.fromUriString(BASE_URI_SPOTIFY + "/artists/" + id + path).build(true).toUri();
     }
 
     private static HttpHeaders getHttpHeaders(String accessToken) {
@@ -95,12 +100,17 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
         return headers;
     }
 
-    private String getAccessToken() throws JsonProcessingException {
+    private String getAccessToken() {
+        if (apiTokenCache.getToken() == null || LocalDateTime.now().isAfter(apiTokenCache.getExpiresAt())) {
+            generateAccessToken();
+        }
+        System.out.println(apiTokenCache.getToken());
+        return apiTokenCache.getToken();
+    }
 
-        var tokenUrl =
-                UriComponentsBuilder.fromUriString("https://accounts.spotify.com/api/token")
-                        .build(true)
-                        .toUri();
+    private void generateAccessToken() {
+
+        var tokenUrl = UriComponentsBuilder.fromUriString("https://accounts.spotify.com/api/token").build(true).toUri();
 
         String credentials = clientId + ":" + clientSecret;
 
@@ -114,32 +124,34 @@ public class SpotifyApiClientImpl implements SpotifyApiClient {
 
         var authTokenResponse = httpWebClient.postSyncronously(tokenUrl, authHeaders, requestBody);
 
-        SpotifyApiAuthResponse
-                authResponse = objectMapper.readValue(authTokenResponse, SpotifyApiAuthResponse.class);
+        SpotifyApiAuthResponse authResponse = null;
+        try {
+            authResponse = objectMapper.readValue(authTokenResponse, SpotifyApiAuthResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e); //TODO: Make exception more specific?
+        }
 
-        return authResponse.getAccessToken();
+        apiTokenCache.setExpiresAt(LocalDateTime.now().plusSeconds(authResponse.getExpiresIn()));
+        apiTokenCache.setToken(authResponse.getAccessToken());
+
     }
 
     private List<Artist> extractArtist(List<Item> items) {
 
-        return items.stream()
-                .map(
-                        item -> {
-                            return Artist
-                                    .builder()
-                                    .externalUrl(item.getExternalUrls().getSpotify())
-                                    .genres(item.getGenres())
-                                    .href(item.getHref())
-                                    .id(item.getId())
-                                    .images(item.getImages())
-                                    .name(item.getName())
-                                    .popularity(item.getPopularity())
-                                    .type(item.getType())
-                                    .uri(item.getUri())
-                                    .build();
+        return items.stream().map(item -> {
+            return Artist.builder()
+                    .externalUrl(item.getExternalUrls().getSpotify())
+                    .genres(item.getGenres())
+                    .href(item.getHref())
+                    .id(item.getId())
+                    .images(item.getImages())
+                    .name(item.getName())
+                    .popularity(item.getPopularity())
+                    .type(item.getType())
+                    .uri(item.getUri())
+                    .build();
 
-                        })
-                .toList();
+        }).toList();
 
 
     }

@@ -1,5 +1,6 @@
 package com.roberthj.musicmaster.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roberthj.musicmaster.models.Event;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class TicketMasterApiClientImpl implements TicketMasterApiClient {
         this.apiKey = apiKey;
     }
 
-    public List<Event> findEventsForArtist(String artist) throws IOException {
+    public List<Event> findEventsForArtist(String artist) {
 
         var uri = generateFullTicketmasterUri("/events.json", artist, apiKey);
 
@@ -40,7 +40,12 @@ public class TicketMasterApiClientImpl implements TicketMasterApiClient {
 
         var response = httpWebClient.getSyncronously(uri, headers);
 
-        var responseObject = objectMapper.readValue(response, EventsRoot.class);
+        EventsRoot responseObject = null;
+        try {
+            responseObject = objectMapper.readValue(response, EventsRoot.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e); //TODO: Make exception more specific?
+        }
 
         //TODO: deal with pagination to get all events
 

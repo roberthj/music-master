@@ -1,6 +1,11 @@
 package com.roberthj.musicmaster.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 
 public class SpotifyApiAuthResponse {
 
@@ -11,14 +16,17 @@ public class SpotifyApiAuthResponse {
   private String tokenType;
 
   @JsonProperty("expires_in")
-  private String expiresIn;
+  private int expiresIn;
 
-  public String getAccessToken() {
-    return accessToken;
-  }
+//  @JsonIgnore
+//  private LocalDateTime expiresTime;
 
-  public void setAccessToken(String accessToken) {
-    this.accessToken = accessToken;
-  }
+//  public SpotifyApiAuthResponse(String accessToken, String tokenType, int expiresIn) {
+//    this.accessToken=accessToken;
+//    this.tokenType=tokenType;
+//    this.expiresIn = expiresIn;
+   // this.expiresTime = LocalDateTime.now().plusSeconds(expiresIn);
+
+ // }
 
 }

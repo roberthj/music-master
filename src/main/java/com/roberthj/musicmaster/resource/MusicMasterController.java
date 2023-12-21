@@ -32,13 +32,6 @@ public class MusicMasterController {
 
   }
 
-  @GetMapping("/lookup_event/{artist}")
-  public String lookUpConcert(@PathVariable(value = "artist") String artist) throws IOException {
-
-    return  musicMasterService.lookupEvent(artist);
-
-  }
-
   //TODO: Add endpoint for saving my events in db
 
   //TODO: Add endpoint for saving my fetching my events from db

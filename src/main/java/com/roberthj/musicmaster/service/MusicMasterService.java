@@ -26,23 +26,19 @@ public class MusicMasterService {
         this.ticketMasterApiClient = ticketMasterApiClient;
     }
 
-    public Artist findEventByArtistName(String artist) throws IOException {
+    public Artist findEventByArtistName(String artist) {
 
         var artistResponse = spotifyApiClient.getArtistByName(artist);
-
-        // Todo: Pick only if name matches and highest popularity
 
         var mostPopularArtistOptional = artistResponse
                 .stream()
                 .filter(item -> item.getName().equalsIgnoreCase(artist))
                 .max(Comparator.comparing(Artist::getPopularity));
 
-        //Add events
 
         if (mostPopularArtistOptional.isEmpty()) {
            throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Artist " + artist + " not found");
-
         }
 
         var mostPopularArtist = mostPopularArtistOptional.get();
@@ -50,15 +46,13 @@ public class MusicMasterService {
 
         var relatedArtists = spotifyApiClient.getRelatedArtists(mostPopularArtist.getId());
 
-        //Add events
+        //Add events for related artists
         relatedArtists
                 .stream()
                 .forEach(relatedArtist -> {
                     try {
                         Thread.sleep(200);  //TODO: Make more sophisticated. API can only take 5 requests per second
                         relatedArtist.setEvents(getEventsForArtist(relatedArtist.getName()));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -77,18 +71,8 @@ public class MusicMasterService {
 
     }
 
-    private List<Event> getEventsForArtist(String artistName) throws IOException {
+    private List<Event> getEventsForArtist(String artistName) {
         return ticketMasterApiClient.findEventsForArtist(artistName);
-    }
-
-
-    public String lookupEvent(String artist) throws IOException {
-
-
-        var eventResponse = getEventsForArtist(artist);
-
-
-        return eventResponse.toString();
     }
 
 }
