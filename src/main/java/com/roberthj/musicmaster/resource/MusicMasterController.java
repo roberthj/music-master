@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping("/v1")
 public class MusicMasterController {
@@ -26,7 +24,7 @@ public class MusicMasterController {
   }
 //TODO: Fix all exception handling
   @GetMapping("/find_events/{artist}")
-  public Artist findEventByArtistName(@PathVariable(value = "artist") String artist) throws IOException {
+  public Artist findEventByArtistName(@PathVariable(value = "artist") String artist) {
 
     return musicMasterService.findEventByArtistName(artist);
 
